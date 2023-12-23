@@ -1,0 +1,7 @@
+package com.jsp.PWApp.repository;
+
+public interface Login {
+
+	String getEmail();
+
+}

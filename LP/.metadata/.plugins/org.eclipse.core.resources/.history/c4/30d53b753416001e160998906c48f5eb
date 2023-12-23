@@ -1,0 +1,100 @@
+package com.jsp.PWApp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jsp.PWApp.dto.Account;
+import com.jsp.PWApp.dto.User;
+import com.jsp.PWApp.service.AccountService;
+import com.jsp.PWApp.service.UserService;
+
+@RestController
+public class AccountController {
+	@Autowired
+	AccountService service;
+	UserService userService;
+	@CrossOrigin(origins = "http://127.0.0.1:5500")
+	@PostMapping("/account/{id}")
+	public ResponseEntity<Account> saveAccount(@RequestBody Account account, @PathVariable int id) {
+		Account savedAccount = service.saveAccount(account, id);
+		if (savedAccount != null) {
+			return ResponseEntity.ok(savedAccount);
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PutMapping("/account")
+	public Account updateAccount(@RequestBody Account account) {
+		return service.updateAccount(account);
+	}
+	@CrossOrigin(origins = "http://127.0.0.1:5500")
+	@DeleteMapping("/account/{id}")
+	public ResponseEntity<Account> deleteAccount(@PathVariable int id) {
+		Account account = service.deleteAccount(id);
+		if (account == null) {
+			return ResponseEntity.ok(null);
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@CrossOrigin(origins = "http://127.0.0.1:5500")
+	@GetMapping("/account/{id}")
+	public ResponseEntity<Account> getByUId(@PathVariable int id) {
+		User user = userService.getById(id);
+		Account account = null;
+//		List<Account> list = service.getAll();
+//		for (Account account2 : list) {
+//			if((account2.getUser().getId()) == user.getId()) {
+//				account = account2;
+//				break;
+//			}
+//		}
+//		account = service.getAccountByUId(uId);
+//		if(user != null) {
+//			account.setUser(user);
+//		}
+		account = service.getByUId(id);
+
+		if (account != null) {
+			return ResponseEntity.ok(account);
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@GetMapping("/account")
+	public List<Account> getAll() {
+		return service.getAll();
+	}
+
+	@PatchMapping("/account")
+	public Account sendAmount(@RequestParam double amt, @RequestParam String password) {
+		return service.sendAmount(amt, password);
+	}
+
+	@PatchMapping("/account/{amt},{accNo}")
+	public Account getAmount(@PathVariable double amt, @PathVariable long accNo) {
+		return service.getAmount(amt, accNo);
+	}
+
+	@GetMapping("/account/bal")
+	public String checkBalance(@RequestParam long accNo, @RequestParam String pass) {
+		return service.checkBalance(accNo, pass);
+	}
+}
